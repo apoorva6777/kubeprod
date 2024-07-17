@@ -25,6 +25,8 @@ spec:
             objectAlias: DATABASE_HOST
           - path: db_user
             objectAlias: DATABASE_USER
+          - path: db_name
+            objectAlias: DATABASE_NAME
           - path: db_password
             objectAlias: DATABASE_PASSWORD
           - path: redis_password
