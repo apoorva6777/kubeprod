@@ -11,7 +11,7 @@ namePrefix: 'vapt-'
 images:
 - name: xyz/details-test
   newName: apoorva6777/ll
-  newTag: 0.0.1
+  newTag: 0.0.2
 
 replicas:
 - name: nest-ms-deployment
