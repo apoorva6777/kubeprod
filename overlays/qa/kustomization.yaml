@@ -112,6 +112,8 @@ patches:
               objectAlias: REDIS_HOST
             - path: redis_port
               objectAlias: REDIS_PORT
+            - path: db_name
+              objectAlias: DATABASE_NAME
 
 - target:
     kind: ServiceAccount
