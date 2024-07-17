@@ -120,4 +120,4 @@ patches:
   patch: |-
     - op: replace
       path: /metadata/annotations/eks.amazonaws.com~1role-arn
-      value: arn:aws:iam::470954241104:role/dev-dvss-dc-ap1-secrets-ssm-role
+      value: arn:aws:iam::507831496546:role/dev-dvss-dc-ap1-secrets-ssm-role
