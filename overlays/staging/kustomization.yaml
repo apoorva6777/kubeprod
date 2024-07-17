@@ -1,0 +1,122 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base
+
+namespace: dvss-apps-ns-staging
+
+namePrefix: 'staging-'
+
+images:
+- name: xyz/details-test
+  newName: apoorva6777/ll
+  newTag: 0.0.1
+
+replicas:
+- name: nest-ms-deployment
+  count: 1
+
+patches:
+- target:
+    kind: HorizontalPodAutoscaler
+    name: staging-nest-ms-deployment-hpa
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: nest-ms-deployment-hpa
+    - op: replace
+      path: /spec/minReplicas
+      value: "1"
+
+- target:
+    kind: Deployment
+    name: nest-ms-deployment
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: nest-ms-deployment
+    - op: replace
+      path: /spec/template/metadata/labels/app
+      value: nest-ms-staging
+    - op: replace
+      path: /spec/selector/matchLabels/app
+      value: nest-ms-staging
+    - op: replace
+      path: /spec/template/spec/volumes/0/csi/volumeAttributes/secretProviderClass
+      value: staging-aws-secrets
+
+- target:
+    kind: AuthorizationPolicy
+    name: productpage-viewer-1
+  patch: |-
+    - op: replace
+      path: /metadata/namespace
+      value: dvss-apps-ns-staging
+    - op: replace
+      path: /spec/selector/matchLabels/app
+      value: nest-ms-staging
+- target:
+    kind: AuthorizationPolicy
+    name: productpage-viewer
+  patch: |-
+    - op: replace
+      path: /metadata/namespace
+      value: dvss-apps-ns-staging
+    - op: replace
+      path: /spec/targetRefs/0/name
+      value: staging-nest-ms-service
+
+- target:
+    kind: ClusterRoleBinding
+    name: staging-sa-crb
+  patch: |-
+    - op: replace
+      path: /metadata/namespace
+      value: dvss-apps-ns-staging
+
+- target:
+    kind: Ingress
+    name: nest-ms-ingress
+  patch: |-
+    - op: replace
+      path: /spec/rules/0/host
+      value: onboarding.staging.com
+- target:
+    kind: Service
+    name: nest-ms-service
+  patch: |-
+    - op: replace
+      path: /spec/selector/app
+      value: nest-ms-staging
+
+- target:
+    kind: SecretProviderClass
+    name: aws-secrets
+  patch: |-
+    - op: replace
+      path: /spec/parameters/objects
+      value: |
+        - objectName: "staging-dvss-dc-ap1-app-secrets-ssm-param-store"
+          objectType: "ssmparameter"
+          jmesPath:
+            - path: db_host
+              objectAlias: DATABASE_HOST
+            - path: db_user
+              objectAlias: DATABASE_USER
+            - path: db_password
+              objectAlias: DATABASE_PASSWORD
+            - path: redis_password
+              objectAlias: REDIS_PASSWORD  
+            - path: redis_host
+              objectAlias: REDIS_HOST
+            - path: redis_port
+              objectAlias: REDIS_PORT
+
+- target:
+    kind: ServiceAccount
+    name: nest-ms-service-account
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/eks.amazonaws.com~1role-arn
+      value: arn:aws:iam::470954241104:role/staging-dvss-dc-ap1-secrets-ssm-role

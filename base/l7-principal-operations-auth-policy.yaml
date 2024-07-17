@@ -1,0 +1,21 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: productpage-viewer
+  namespace: test_base_ns
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+spec:
+  targetRefs:
+  - kind: Service
+    group: ""
+    name: nest-ms-service
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/istio-ingress/sa/istio-ingressgateway-service-account
+    to:
+    - operation:
+        methods: ["GET"]

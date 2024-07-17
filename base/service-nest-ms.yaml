@@ -1,0 +1,18 @@
+apiVersion: v1 
+kind: Service
+metadata: 
+  name: nest-ms-service
+  namespace: test_base_ns
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  selector:
+    app: nestapp
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+  - name: https
+    port: 443
+    targetPort: 3000
+
